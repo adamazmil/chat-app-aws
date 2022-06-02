@@ -1,6 +1,6 @@
 # Chat App 
 
-  A serverless chat app with Websocket API, Lambda and DynamoDB. Static React website deployed on Cloudfront
+  A serverless chat app with Websocket API, Lambda and DynamoDB. React App deployed on S3 Cloudfront
 
 ## Deployment
 Prerequisite 

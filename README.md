@@ -4,8 +4,8 @@
 
 ## Deployment
 Prerequisite 
--AWS CLI
--AWS CDK CLI
+- AWS CLI
+- AWS CDK CLI
 
 ```
 cd chat-app

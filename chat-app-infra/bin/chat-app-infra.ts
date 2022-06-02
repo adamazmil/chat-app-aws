@@ -2,6 +2,7 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { ChatAppFrontendInfraStack } from '../lib/chat-app-frontend-infra-stack';
+import { ChatAppBackendInfraStack } from '../lib/chat-app-backend-infra-stack';
 
 const app = new cdk.App();
 new ChatAppFrontendInfraStack(app, 'ChatAppInfraStack', {
@@ -19,3 +20,6 @@ new ChatAppFrontendInfraStack(app, 'ChatAppInfraStack', {
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
+new ChatAppBackendInfraStack(app, 'ChatAppBackendInfraStack', { 
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+})

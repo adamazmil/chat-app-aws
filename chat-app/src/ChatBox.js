@@ -32,7 +32,7 @@ function ChatBox() {
       <div className="ChatBox-form">
         <form onSubmit={handleSubmit}>
           <input type="text" value={currentMsg} onChange={handleChange} />
-          <input type="submit" value="Submit"></input>
+          <button type="submit" >Submit</button>
         </form>
       </div>
     </div>

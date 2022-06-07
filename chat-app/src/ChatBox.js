@@ -15,11 +15,16 @@ function ChatBox() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    const payload = { action: "sendmessage", message: currentMsg };
-    setCurrentMsg("");
-    if (webSocket.readyState === 1) {
-      webSocket.send(JSON.stringify(payload));
-      setMessages((prev) => [...prev, payload.message]);
+    if (currentMsg.length >= 0 && currentMsg.replace(/\s/g, '').length === 0) {
+      // user tried to send only spaces
+      setCurrentMsg('');
+    } else {
+      const payload = { action: "sendmessage", message: currentMsg };
+      setCurrentMsg('');
+      if (webSocket.readyState === 1) {
+        webSocket.send(JSON.stringify(payload));
+        setMessages((prev) => [...prev, payload.message]);
+      }
     }
   }
   function handleChange(event) {

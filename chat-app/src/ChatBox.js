@@ -31,8 +31,8 @@ function ChatBox() {
       <ChatFrame messages={messages}/>
       <div className="ChatBox-form">
         <form onSubmit={handleSubmit}>
-          <input type="text" value={currentMsg} onChange={handleChange} />
-          <button type="submit" >Submit</button>
+          <input type="text" value={currentMsg} onChange={handleChange} placeholder='Type something...'/>
+          <button type="submit">Send</button>
         </form>
       </div>
     </div>

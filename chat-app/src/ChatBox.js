@@ -1,5 +1,7 @@
 import "./ChatBox.css";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import ChatFrame from "./ChatFrame"
+
 const webSocket = new WebSocket(process.env.REACT_APP_API_KEY);
 function ChatBox() {
   const [currentMsg, setCurrentMsg] = useState("");
@@ -10,10 +12,6 @@ function ChatBox() {
       setMessages((prev) => [...prev, message.data]);
     };
   }, []);
-
-  useEffect(() => {
-    
-  }, [messages]);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -29,11 +27,14 @@ function ChatBox() {
   }
 
   return (
-    <div className="ChatBox-form">
-      <form onSubmit={handleSubmit}>
-        <input type="text" value={currentMsg} onChange={handleChange} />
-        <input type="submit" value="Submit"></input>
-      </form>
+    <div className='ChatBox'>
+      <ChatFrame messages={messages}/>
+      <div className="ChatBox-form">
+        <form onSubmit={handleSubmit}>
+          <input type="text" value={currentMsg} onChange={handleChange} />
+          <input type="submit" value="Submit"></input>
+        </form>
+      </div>
     </div>
   );
 }

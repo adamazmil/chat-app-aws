@@ -26,7 +26,7 @@ export class ChatAppBackendInfraStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY
     });
     const connectFunc = new Function(this, 'connect-lambda', {
-      code: new AssetCode('./lib/lambda'),
+      code: new AssetCode('./lib/lambda/onconnect'),
       handler: 'onconnect.handler',
       runtime: Runtime.NODEJS_16_X,
       memorySize: 256,
@@ -36,7 +36,7 @@ export class ChatAppBackendInfraStack extends Stack {
     });
     table.grantReadWriteData(connectFunc);
     const disconnectFunc = new Function(this, 'disconnect-lambda', {
-      code: new AssetCode('./lib/lambda'),
+      code: new AssetCode('./lib/lambda/ondisconnect'),
       handler: 'ondisconnect.handler',
       runtime: Runtime.NODEJS_16_X,
       memorySize: 256,
@@ -46,7 +46,7 @@ export class ChatAppBackendInfraStack extends Stack {
     })
     table.grantReadWriteData(disconnectFunc);
     const messageFunc = new Function(this, 'message-lambda', {
-      code: new AssetCode('./lib/lambda'),
+      code: new AssetCode('./lib/lambda/message'),
       handler: 'message.handler',
       runtime: Runtime.NODEJS_16_X,
       memorySize: 256,
@@ -67,13 +67,21 @@ export class ChatAppBackendInfraStack extends Stack {
     });
     table.grantReadWriteData(messageFunc);
     const defaultFunc = new Function(this, 'default-lambda', {
-      code: new AssetCode('./lib/lambda'),
+      code: new AssetCode('./lib/lambda/default'),
       handler: 'default.handler',
       runtime: Runtime.NODEJS_16_X,
       memorySize: 256,
-      environment: {
-          "TABLE_NAME": tableName,
-      },
+      initialPolicy: [
+        new PolicyStatement({
+          actions: [
+            'execute-api:ManageConnections'
+          ],
+          resources: [
+            'arn:aws:execute-api:' + this.region + ':' + this.account + ':' + api.ref + '/*'
+          ],
+          effect: Effect.ALLOW,
+        })
+      ]
     });
 
     // access role for the socket api to access the socket lambda 

@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 
-exports.handler = async (event) => {
+exports.handler = async function (event, context) {
   let connectionInfo;
   let connectionId = event.requestContext.connectionId;
 

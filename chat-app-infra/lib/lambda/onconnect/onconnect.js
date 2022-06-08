@@ -10,7 +10,7 @@ exports.handler = async (event) => {
         TableName: process.env.TABLE_NAME,
         Item: {
           connectionId: event.requestContext.connectionId,
-          guestName: animals[Math.random()*4]
+          guestName: animals[Math.floor(Math.random()*4)]
         },
       })
       .promise();

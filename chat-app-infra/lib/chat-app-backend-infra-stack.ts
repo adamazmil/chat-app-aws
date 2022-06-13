@@ -1,6 +1,6 @@
 import { Stack, StackProps, CfnOutput,RemovalPolicy, Aws } from 'aws-cdk-lib';
 import {AssetCode, Function, Runtime} from "aws-cdk-lib/aws-lambda";
-import { CfnApi, CfnDeployment, CfnIntegration, CfnRoute, CfnStage } from "aws-cdk-lib/aws-apigatewayv2";
+import { CfnApi, CfnDeployment, CfnIntegration, CfnRoute, CfnStage, CfnIntegrationResponse, CfnRouteResponse } from "aws-cdk-lib/aws-apigatewayv2";
 import { AttributeType, Table } from "aws-cdk-lib/aws-dynamodb";
 import {Effect, PolicyStatement, Role, ServicePrincipal} from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
@@ -51,7 +51,7 @@ export class ChatAppBackendInfraStack extends Stack {
       runtime: Runtime.NODEJS_16_X,
       memorySize: 256,
       environment: {
-          "TABLE_NAME": tableName,
+        "TABLE_NAME": tableName,
       },
       initialPolicy: [
         new PolicyStatement({
@@ -83,6 +83,27 @@ export class ChatAppBackendInfraStack extends Stack {
         })
       ]
     });
+    const getGuestFunc = new Function(this, 'getguest-lambda', {
+      code: new AssetCode('./lib/lambda/getguest'),
+      handler: 'getguest.handler',
+      runtime: Runtime.NODEJS_16_X,
+      memorySize: 128,
+      environment: {
+        "TABLE_NAME": tableName
+      },
+      initialPolicy: [
+        new PolicyStatement({
+          actions: [
+            'execute-api:ManageConnections'
+          ],
+          resources: [
+            'arn:aws:execute-api:' + this.region + ':' + this.account + ':' + api.ref + '/*'
+          ],
+          effect: Effect.ALLOW,
+        })
+      ]
+    });
+    table.grantReadData(getGuestFunc)
 
     // access role for the socket api to access the socket lambda 
     const policy = new PolicyStatement({
@@ -91,7 +112,8 @@ export class ChatAppBackendInfraStack extends Stack {
         connectFunc.functionArn,
         disconnectFunc.functionArn,
         messageFunc.functionArn,
-        defaultFunc.functionArn
+        defaultFunc.functionArn,
+        getGuestFunc.functionArn
       ],
       actions: ["lambda:InvokeFunction"]
     })
@@ -118,12 +140,18 @@ export class ChatAppBackendInfraStack extends Stack {
       apiId: api.ref,
       integrationType: "AWS_PROXY",
       integrationUri: 'arn:aws:apigateway:' + this.region + ':lambda:path/2015-03-31/functions/' + messageFunc.functionArn + '/invocations',
-      credentialsArn: role.roleArn      
+      credentialsArn: role.roleArn
     })
     const defaultIntegration = new CfnIntegration(this, 'default-integration', {
       apiId: api.ref,
       integrationType: "AWS_PROXY",
       integrationUri: 'arn:aws:apigateway:' + this.region + ':lambda:path/2015-03-31/functions/' + defaultFunc.functionArn + '/invocations',
+      credentialsArn: role.roleArn
+    })
+    const getGuestIntegration = new CfnIntegration(this, 'getguest-integration', {
+      apiId: api.ref,
+      integrationType: "AWS_PROXY",
+      integrationUri: 'arn:aws:apigateway:' + this.region + ':lambda:path/2015-03-31/functions/' + getGuestFunc.functionArn + '/invocations',
       credentialsArn: role.roleArn
     })
 
@@ -153,6 +181,25 @@ export class ChatAppBackendInfraStack extends Stack {
       authorizationType: 'NONE',
       target: 'integrations/' + defaultIntegration.ref,
     });
+    const getGuestRoute = new CfnRoute(this, 'getguest-route', {
+      apiId: api.ref,
+      routeKey: 'getguest',
+      routeResponseSelectionExpression:'$default',
+      authorizationType: 'NONE',
+      target: 'integrations/' + getGuestIntegration.ref,
+    })
+
+    const getGuestIntegrationResponse = new CfnIntegrationResponse(this, 'getguest-integration-response', {
+      apiId: api.ref,
+      integrationId: getGuestIntegration.ref,
+      integrationResponseKey: '/200/'
+    })
+
+    const getGuestRouteResponse = new CfnRouteResponse(this, 'getguest-route-response', {
+      apiId: api.ref,
+      routeId: getGuestRoute.ref,
+      routeResponseKey: '$default'
+    })
 
     const deployment = new CfnDeployment(this, `${name}-deployment`, {
       apiId: api.ref
@@ -168,5 +215,6 @@ export class ChatAppBackendInfraStack extends Stack {
     deployment.node.addDependency(disconnectRoute)
     deployment.node.addDependency(messageRoute)  
     deployment.node.addDependency(defaultRoute)
+    deployment.node.addDependency(getGuestRoute)
   }
 }

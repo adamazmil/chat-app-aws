@@ -18,7 +18,7 @@ exports.handler = async (event) => {
       statusCode:500
     }
   }
-  var payload = await {type:'getGuest',messsage:item.Item.guestName}
+  var payload = await {type:'getGuest',message:item.Item.guestName}
   return {
     body: JSON.stringify(payload),
     statusCode: 200,

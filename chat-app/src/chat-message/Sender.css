@@ -1,0 +1,6 @@
+.Sender{
+  display:inherit;
+  font-weight:bold;
+  word-break:break-word;
+  max-width:18vw;
+}

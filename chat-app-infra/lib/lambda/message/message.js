@@ -17,12 +17,13 @@ exports.handler = async (event) => {
   });
 
   const message = JSON.parse(event.body).message;
+  const payload = {type:'message',message:message}
 
   const sendMessages = connections.Items.map(async ({ connectionId }) => {
     if (connectionId !== event.requestContext.connectionId) {
       try {
         await callbackAPI
-          .postToConnection({ ConnectionId: connectionId, Data: message })
+          .postToConnection({ ConnectionId: connectionId, Data: JSON.stringify(payload) })
           .promise();
       } catch (e) {
         console.log(e);

@@ -1,29 +1,31 @@
 .ChatBox {
   text-align: center;
+  width:7 0vw;
 }
 
 .ChatBox-form {
-  background-color: #282c34;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  margin-bottom: 10vh;
 }
 
 input{
   padding: 12px 20px;
-  margin: 8px 0;
-  min-width: 30vw;
+  margin: 1vw 0;
+  margin-left:5vw;
+  min-width: 50vw;
   border-radius: 20px;
-  border: 2px solid #d1d1cb
+  border: 2px solid #d1d1cb;
+  font-size: calc(6px + 2vmin);
 }
 
 button{
-  padding: 12px 16px;
+  min-width:5vw;
+  padding: calc(1.5vmin) 16px;
+  font-size: calc(6px + 2vmin);
   border-radius: 12px;
-  border: 2px solid #d1d1cb
+  border: 2px solid #d1d1cb;
 }
 button:hover{
   cursor:pointer;

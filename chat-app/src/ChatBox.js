@@ -3,14 +3,32 @@ import { useState, useEffect } from "react";
 import ChatFrame from "./ChatFrame"
 
 const webSocket = new WebSocket(process.env.REACT_APP_API_KEY);
+
 function ChatBox() {
   const [currentMsg, setCurrentMsg] = useState("");
   const [messages, setMessages] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     webSocket.onmessage = (message) => {
-      setMessages((prev) => [...prev, message.data]);
+      const json = JSON.parse(message.data)
+      switch (json.type) {
+        case 'message': {
+          setMessages((prev) => [...prev, json.message]);
+          break;
+        }
+        case 'getGuest': {
+          setUser(json.message)
+          break;
+        }
+        default: {
+        }
+      }
     };
+    webSocket.onopen = () => {
+      let payload = { action: "getguest" }
+      webSocket.send(JSON.stringify(payload));
+    }
   }, []);
 
   function handleSubmit(event) {
@@ -20,11 +38,14 @@ function ChatBox() {
       setCurrentMsg('');
     } else {
       const payload = { action: "sendmessage", message: currentMsg };
+      const msg = { msg: currentMsg, sender: user };
       setCurrentMsg('');
       if (webSocket.readyState === 1) {
         webSocket.send(JSON.stringify(payload));
-        setMessages((prev) => [...prev, payload.message]);
+        setMessages((prev) => [...prev, msg]);
       }
+
+      
     }
   }
   function handleChange(event) {

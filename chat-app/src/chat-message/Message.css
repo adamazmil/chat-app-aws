@@ -1,0 +1,7 @@
+.Message{
+  display:inherit;
+  margin-left: 1vw;
+  word-break:break-all;
+  max-width:35vw;
+  color:rgb(201, 191, 191);
+}

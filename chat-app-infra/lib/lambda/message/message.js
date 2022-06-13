@@ -2,6 +2,11 @@ const AWS = require("aws-sdk");
 const ddb = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
+  const callbackAPI = new AWS.ApiGatewayManagementApi({
+    apiVersion: "2018-11-29",
+    endpoint:
+      event.requestContext.domainName + "/" + event.requestContext.stage,
+  });
   let connections;
   try {
     connections = await ddb.scan({ TableName: process.env.TABLE_NAME }).promise();
@@ -10,13 +15,22 @@ exports.handler = async (event) => {
       statusCode: 500,
     };
   }
-  const callbackAPI = new AWS.ApiGatewayManagementApi({
-    apiVersion: "2018-11-29",
-    endpoint:
-      event.requestContext.domainName + "/" + event.requestContext.stage,
-  });
-
-  const message = JSON.parse(event.body).message;
+  let sender
+  try {
+    const senderId = event.requestContext.connectionId
+    const params = {
+      TableName: process.env.TABLE_NAME,
+      Key:{
+        connectionId: senderId
+      }
+    }
+    sender =  await ddb.get(params).promise()
+  } catch (err) {
+    return {
+      statusCode: 500
+    }
+  }
+  const message = { msg: JSON.parse(event.body).message, sender: sender.Item.guestName };
   const payload = {type:'message',message:message}
 
   const sendMessages = connections.Items.map(async ({ connectionId }) => {

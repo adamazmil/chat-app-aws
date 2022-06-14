@@ -1,6 +1,6 @@
 .ChatBox {
   text-align: center;
-  width:7 0vw;
+  width:70vw;
 }
 
 .ChatBox-form {
@@ -16,6 +16,7 @@ input{
   margin-left:5vw;
   min-width: 50vw;
   border-radius: 20px;
+  background-color: white;
   border: 2px solid #d1d1cb;
   font-size: calc(6px + 2vmin);
 }
@@ -25,6 +26,7 @@ button{
   padding: calc(1.5vmin) 16px;
   font-size: calc(6px + 2vmin);
   border-radius: 12px;
+  background-color: white;
   border: 2px solid #d1d1cb;
 }
 button:hover{

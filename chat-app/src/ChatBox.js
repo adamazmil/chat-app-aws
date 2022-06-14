@@ -8,6 +8,7 @@ function ChatBox() {
   const [currentMsg, setCurrentMsg] = useState("");
   const [messages, setMessages] = useState([]);
   const [user, setUser] = useState(null);
+  const time = new Date()
 
   useEffect(() => {
     webSocket.onmessage = (message) => {
@@ -38,14 +39,12 @@ function ChatBox() {
       setCurrentMsg('');
     } else {
       const payload = { action: "sendmessage", message: currentMsg };
-      const msg = { msg: currentMsg, sender: user };
+      const msg = { msg: currentMsg, sender: user, timestamp: time.getTime() };
       setCurrentMsg('');
       if (webSocket.readyState === 1) {
         webSocket.send(JSON.stringify(payload));
         setMessages((prev) => [...prev, msg]);
       }
-
-      
     }
   }
   function handleChange(event) {

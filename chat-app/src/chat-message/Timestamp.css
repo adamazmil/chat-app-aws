@@ -1,0 +1,9 @@
+.Timestamp{
+  display:inherit;
+  color:rgb(201, 191, 191);
+  min-width: 10vw;
+  justify-content:center;
+  margin-left:auto;
+  /* align-self: flex-end; */
+  font-size: calc(2px + 2vmin);
+}

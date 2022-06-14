@@ -1,10 +1,11 @@
 .ChatBox {
   text-align: center;
   width:70vw;
+  overflow:hidden;
 }
 
 .ChatBox-form {
-  display: flex;
+  
   font-size: calc(10px + 2vmin);
   color: white;
   margin-bottom: 10vh;

@@ -21,6 +21,13 @@ input{
   border: 2px solid #d1d1cb;
   font-size: calc(6px + 2vmin);
 }
+input:disabled{
+  background-color: grey;
+}
+
+input:disabled::placeholder{
+  color: white;
+}
 
 button{
   min-width:5vw;

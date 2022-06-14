@@ -1,7 +1,6 @@
 .ChatMessage{
   display: inherit;
   flex-direction: row;
-  align-items: left;
   position: relative;
 }
 

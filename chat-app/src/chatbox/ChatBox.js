@@ -8,6 +8,7 @@ function ChatBox() {
   const [currentMsg, setCurrentMsg] = useState("");
   const [messages, setMessages] = useState([]);
   const [user, setUser] = useState(null);
+  const [disable, setDisable] = useState(true);
   const time = new Date()
 
   useEffect(() => {
@@ -30,7 +31,15 @@ function ChatBox() {
       let payload = { action: "getguest" }
       webSocket.send(JSON.stringify(payload));
     }
+    webSocket.onclose = () => {
+      setDisable(true);
+    }
   }, []);
+
+  useEffect(() => {
+    if (user !== null)
+      setDisable(false)
+  },[user])
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -56,8 +65,8 @@ function ChatBox() {
       <ChatFrame messages={messages}/>
       <div className="ChatBox-form">
         <form onSubmit={handleSubmit}>
-          <input disabled={user===null} type="text" value={currentMsg} onChange={handleChange} placeholder='Type something...'/>
-          <button type="submit">Send</button>
+          <input disabled={disable} type="text" value={currentMsg} onChange={handleChange} placeholder='Type something...'/>
+          <button disabled={disable} type="submit">Send</button>
         </form>
       </div>
     </div>

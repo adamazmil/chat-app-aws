@@ -8,11 +8,10 @@ Prerequisite
 - AWS CDK CLI
 
 ```
-cd chat-app
-npm install
-npm start build
-cd ../chat-app-infra
-cdk bootstrap
-cdk deploy ChatAppBackendInfraStack
-cdk deploy AppInfraStack
+cd chat-app-infra
+npm install 
+cd ../chat-app
+npm install 
+npm run api --profile=<aws-profile>
+npm run deploy --profile=<aws-profile>
 ```

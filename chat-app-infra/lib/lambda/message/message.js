@@ -2,6 +2,7 @@ const AWS = require("aws-sdk");
 const ddb = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
+  let now = Date.now();
   const callbackAPI = new AWS.ApiGatewayManagementApi({
     apiVersion: "2018-11-29",
     endpoint:
@@ -30,7 +31,7 @@ exports.handler = async (event) => {
       statusCode: 500
     }
   }
-  const message = { msg: JSON.parse(event.body).message, sender: sender.Item.guestName };
+  const message = { msg: JSON.parse(event.body).message, sender: sender.Item.guestName, timestamp: now };
   const payload = {type:'message',message:message}
 
   const sendMessages = connections.Items.map(async ({ connectionId }) => {

@@ -9,8 +9,15 @@ function ChatBox() {
   const [messages, setMessages] = useState([]);
   const [user, setUser] = useState(null);
   const [disable, setDisable] = useState(true);
+  const [isTyping, setIsTyping] = useState(null);
+  const [len,setLen] = useState(0);
   const time = new Date()
 
+  /* 
+    sets up event listeners.
+    json = [type: String, message: Object]: Array
+    json.message = {msg:String ,sender: String,timestamp: String}: Object
+  */
   useEffect(() => {
     webSocket.onmessage = (message) => {
       const json = JSON.parse(message.data)
@@ -36,10 +43,38 @@ function ChatBox() {
     }
   }, []);
 
+  // checks whether user is not null to allow typing in form. 
   useEffect(() => {
     if (user !== null)
       setDisable(false)
-  },[user])
+  }, [user]);
+
+  /* sets up a timeout for isTyping that is allowed to 
+  resolve if len remains unchanged. clearTimeout clears our 
+  timeout if we continue typing.
+  */
+  useEffect(() => {
+    if (len >= 3) {
+      setIsTyping(true);
+      var timeout = setTimeout(() => {
+        setIsTyping(false);
+      }, 5000);
+    }
+    return () => {
+      clearTimeout(timeout);
+    }
+  }, [len]);
+  
+  // sends a message to the websocket when user is typing
+  useEffect(() => {
+    if (isTyping === true) {
+      console.log('sending true to ws');
+      /* todo */
+    } else if(isTyping===false){
+      console.log('sending false to ws')
+    }
+  }, [isTyping]);
+  
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -58,6 +93,7 @@ function ChatBox() {
   }
   function handleChange(event) {
     setCurrentMsg(event.target.value);
+    setLen(event.target.value.length);
   }
 
   return (

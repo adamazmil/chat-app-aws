@@ -17,7 +17,7 @@ export class ChatAppFrontendInfraStack extends Stack {
     // Create S3 Bucket for our website
     const siteBucket = new s3.Bucket(this, "SiteBucket", {
       websiteIndexDocument: 'index.html',
-      publicReadAccess: false,
+      publicReadAccess: true,
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true
     });

@@ -9,7 +9,6 @@ export class ChatAppBackendInfraStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
     const tableName = 'chat_connections';
-
     // initialises API
     const name = id + '-api';
     const api = new CfnApi(this, name, {
@@ -103,7 +102,49 @@ export class ChatAppBackendInfraStack extends Stack {
         })
       ]
     });
-    table.grantReadData(getGuestFunc)
+    table.grantReadData(getGuestFunc);
+    const isTypingFunc = new Function(this, 'is-typing-lambda', {
+      code: new AssetCode('./lib/lambda/is-typing'),
+      handler: 'isTyping.handler',
+      runtime: Runtime.NODEJS_16_X,
+      memorySize: 128,
+      environment: {
+        "TABLE_NAME": table.tableName
+      },
+      initialPolicy: [
+        new PolicyStatement({
+          actions: [
+            'execute-api:ManageConnections'
+          ],
+          resources: [
+            'arn:aws:execute-api:' + this.region + ':' + this.account + ':' + api.ref + '/*'
+          ],
+          effect: Effect.ALLOW,
+        })
+      ]
+    })
+    table.grantReadData(isTypingFunc);
+    const notTypingFunc = new Function(this, 'not-typing-lambda', {
+      code: new AssetCode('./lib/lambda/not-typing'),
+      handler: 'notTyping.handler',
+      runtime: Runtime.NODEJS_16_X,
+      memorySize: 128,
+      environment: {
+        "TABLE_NAME": table.tableName
+      },
+      initialPolicy: [
+        new PolicyStatement({
+          actions: [
+            'execute-api:ManageConnections'
+          ],
+          resources: [
+            'arn:aws:execute-api:' + this.region + ':' + this.account + ':' + api.ref + '/*'
+          ],
+          effect: Effect.ALLOW,
+        })
+      ]
+    })
+    table.grantReadData(notTypingFunc);
 
     // access role for the socket api to access the socket lambda 
     const policy = new PolicyStatement({
@@ -113,7 +154,9 @@ export class ChatAppBackendInfraStack extends Stack {
         disconnectFunc.functionArn,
         messageFunc.functionArn,
         defaultFunc.functionArn,
-        getGuestFunc.functionArn
+        getGuestFunc.functionArn,
+        isTypingFunc.functionArn,
+        notTypingFunc.functionArn
       ],
       actions: ["lambda:InvokeFunction"]
     })
@@ -154,7 +197,18 @@ export class ChatAppBackendInfraStack extends Stack {
       integrationUri: 'arn:aws:apigateway:' + this.region + ':lambda:path/2015-03-31/functions/' + getGuestFunc.functionArn + '/invocations',
       credentialsArn: role.roleArn
     })
-
+    const isTypingIntegration = new CfnIntegration(this, 'is-typing-integration', {
+      apiId: api.ref,
+      integrationType: "AWS_PROXY",
+      integrationUri: 'arn:aws:apigateway:' + this.region + ':lambda:path/2015-03-31/functions/' + isTypingFunc.functionArn + '/invocations',
+      credentialsArn: role.roleArn
+    })
+    const notTypingIntegration = new CfnIntegration(this, 'not-typing-integration', {
+      apiId: api.ref,
+      integrationType: "AWS_PROXY",
+      integrationUri: 'arn:aws:apigateway:' + this.region + ':lambda:path/2015-03-31/functions/' + notTypingFunc.functionArn + '/invocations',
+      credentialsArn: role.roleArn
+    })
     // sets up routes for api 
 
     const connectRoute = new CfnRoute(this, 'connect-route', {
@@ -188,6 +242,18 @@ export class ChatAppBackendInfraStack extends Stack {
       authorizationType: 'NONE',
       target: 'integrations/' + getGuestIntegration.ref,
     })
+    const isTypingRoute = new CfnRoute(this, 'is-typing-route', {
+      apiId: api.ref,
+      routeKey: 'istyping',
+      authorizationType: 'NONE',
+      target: 'integrations/' + isTypingIntegration.ref,
+    })
+    const notTypingRoute = new CfnRoute(this, 'not-typing-route', {
+      apiId: api.ref,
+      routeKey: 'nottyping',
+      authorizationType: 'NONE',
+      target: 'integrations/' + notTypingIntegration.ref,
+    })
 
     const getGuestIntegrationResponse = new CfnIntegrationResponse(this, 'getguest-integration-response', {
       apiId: api.ref,
@@ -216,5 +282,7 @@ export class ChatAppBackendInfraStack extends Stack {
     deployment.node.addDependency(messageRoute)  
     deployment.node.addDependency(defaultRoute)
     deployment.node.addDependency(getGuestRoute)
+    deployment.node.addDependency(isTypingRoute)
+    deployment.node.addDependency(notTypingRoute)
   }
 }

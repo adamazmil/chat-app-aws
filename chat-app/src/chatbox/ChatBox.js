@@ -87,6 +87,7 @@ function ChatBox() {
   }, [isTyping,user]);
   
   function handleSubmit(event) {
+    setIsTyping(false);
     event.preventDefault();
     if (currentMsg.length >= 0 && currentMsg.replace(/\s/g, '').length === 0) {
       // user tried to send only spaces

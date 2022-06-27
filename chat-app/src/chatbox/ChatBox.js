@@ -22,7 +22,6 @@ function ChatBox() {
   useEffect(() => {
      webSocket.onmessage = (message) => {
        const json = JSON.parse(message.data)
-       console.log(json)
       switch (json.type) {
         case 'message': {
           setMessages((prev) => [...prev, json.message]);
@@ -87,10 +86,6 @@ function ChatBox() {
     }
   }, [isTyping,user]);
   
-  useEffect(() => {
-
-    console.log(typingUser)
-  },[typingUser])
   function handleSubmit(event) {
     event.preventDefault();
     if (currentMsg.length >= 0 && currentMsg.replace(/\s/g, '').length === 0) {

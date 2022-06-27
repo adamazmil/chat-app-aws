@@ -17,7 +17,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "deploy": "npm run build && cd ../chat-app-infra/ && cdk deploy ChatAppInfraStack --profile $npm_config_profile",
-    "api": "cd ../chat-app-infra/ && cdk deploy ChatAppBackendInfraStack --profile $npm_config_profile"
+    "deploy:api": "cd ../chat-app-infra/ && cdk deploy ChatAppBackendInfraStack --profile $npm_config_profile"
   },
   "eslintConfig": {
     "extends": [

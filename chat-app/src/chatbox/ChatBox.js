@@ -10,7 +10,8 @@ function ChatBox() {
   const [user, setUser] = useState(null);
   const [disable, setDisable] = useState(true);
   const [isTyping, setIsTyping] = useState(null);
-  const [len,setLen] = useState(0);
+  const [len, setLen] = useState(0);
+  const [typingUser,setTypingUsers] = useState([])
   const time = new Date()
 
   /* 
@@ -19,8 +20,9 @@ function ChatBox() {
     json.message = {msg:String ,sender: String,timestamp: String}: Object
   */
   useEffect(() => {
-    webSocket.onmessage = (message) => {
-      const json = JSON.parse(message.data)
+     webSocket.onmessage = (message) => {
+       const json = JSON.parse(message.data)
+       console.log(json)
       switch (json.type) {
         case 'message': {
           setMessages((prev) => [...prev, json.message]);
@@ -28,6 +30,14 @@ function ChatBox() {
         }
         case 'getGuest': {
           setUser(json.message)
+          break;
+        }
+        case 'isTyping': {
+          setTypingUsers((prev) => [...prev, json.message]);
+          break;
+        }
+        case 'notTyping': {
+          setTypingUsers((prev) => prev.filter((x)=>x.typer!==json.message.typer))
           break;
         }
         default: {
@@ -67,15 +77,20 @@ function ChatBox() {
   
   // sends a message to the websocket when user is typing
   useEffect(() => {
+    let json;
     if (isTyping === true) {
-      console.log('sending true to ws');
-      /* todo */
+      json = { action: 'istyping', message: user }
+      webSocket.send(JSON.stringify(json))
     } else if(isTyping===false){
-      console.log('sending false to ws')
+      json = { action: 'nottyping', message: user }
+      webSocket.send(JSON.stringify(json))
     }
-  }, [isTyping]);
+  }, [isTyping,user]);
   
+  useEffect(() => {
 
+    console.log(typingUser)
+  },[typingUser])
   function handleSubmit(event) {
     event.preventDefault();
     if (currentMsg.length >= 0 && currentMsg.replace(/\s/g, '').length === 0) {
@@ -98,7 +113,7 @@ function ChatBox() {
 
   return (
     <div className='ChatBox'>
-      <ChatFrame messages={messages}/>
+      <ChatFrame messages={messages} typer={typingUser} />
       <div className="ChatBox-form">
         <form onSubmit={handleSubmit}>
           <input disabled={disable} type="text" value={currentMsg} onChange={handleChange} placeholder='Type something...'/>

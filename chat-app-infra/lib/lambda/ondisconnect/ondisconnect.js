@@ -1,15 +1,24 @@
-const AWS = require("aws-sdk");
-const ddb = new AWS.DynamoDB.DocumentClient();
+
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb')
+const { DynamoDBDocumentClient, DeleteCommand } = require('@aws-sdk/lib-dynamodb')
+const dbClient = new DynamoDBClient({})
+const ddbDocClient = DynamoDBDocumentClient.from(dbClient)
+
 exports.handler = async (event) => {
-  await ddb
-    .delete({
+  try {
+    await ddbDocClient.send(new DeleteCommand({
       TableName: process.env.TABLE_NAME,
       Key: {
-        connectionId: event.requestContext.connectionId,
-      },
-    })
-    .promise();
+        connectionId: event.requestContext.connectionId
+      }
+    }));
+  } catch (err) {
+    return {
+      statusCode:500,
+    }
+  }
   return {
-    statusCode: 200,
-  };
-};
+    statusCode: 200
+  }
+}
+

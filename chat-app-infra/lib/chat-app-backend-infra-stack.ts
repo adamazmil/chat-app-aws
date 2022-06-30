@@ -34,16 +34,6 @@ export class ChatAppBackendInfraStack extends Stack {
       }
     });
     table.grantReadWriteData(connectFunc);
-    const disconnectFunc = new Function(this, 'disconnect-lambda', {
-      code: new AssetCode('./lib/lambda/ondisconnect'),
-      handler: 'ondisconnect.handler',
-      runtime: Runtime.NODEJS_16_X,
-      memorySize: 256,
-      environment: {
-        "TABLE_NAME": tableName
-      }
-    })
-    table.grantReadWriteData(disconnectFunc);
     const messageFunc = new Function(this, 'message-lambda', {
       code: new AssetCode('./lib/lambda/message'),
       handler: 'message.handler',
@@ -145,6 +135,58 @@ export class ChatAppBackendInfraStack extends Stack {
       ]
     })
     table.grantReadData(notTypingFunc);
+    const cleanupFunc = new Function(this, 'cleanup-lambda', {
+      code: new AssetCode('./lib/lambda/cleanup'),
+      handler: 'cleanup.handler',
+      runtime: Runtime.NODEJS_16_X,
+      memorySize: 128,
+      environment: {
+        "TABLE_NAME": table.tableName
+      },
+      initialPolicy: [
+        new PolicyStatement({
+          actions: [
+            'execute-api:ManageConnections'
+          ],
+          resources: [
+            'arn:aws:execute-api:' + this.region + ':' + this.account + ':' + api.ref + '/*'
+          ],
+          effect: Effect.ALLOW,
+        })
+      ]
+    })
+    table.grantReadWriteData(cleanupFunc);
+    const disconnectFunc = new Function(this, 'disconnect-lambda', {
+      code: new AssetCode('./lib/lambda/ondisconnect'),
+      handler: 'ondisconnect.handler',
+      runtime: Runtime.NODEJS_16_X,
+      memorySize: 256,
+      environment: {
+        "TABLE_NAME": tableName,
+        "FUNC_NAME": cleanupFunc.functionArn
+      },
+      initialPolicy: [
+        new PolicyStatement({
+          actions: [
+            'execute-api:ManageConnections'
+          ],
+          resources: [
+            'arn:aws:execute-api:' + this.region + ':' + this.account + ':' + api.ref + '/*'
+          ],
+          effect: Effect.ALLOW,
+        }),
+        new PolicyStatement({
+          actions: [
+            'lambda:invokeFunction'
+          ],
+          resources: [
+            cleanupFunc.functionArn
+          ],
+          effect: Effect.ALLOW
+        })
+      ]
+    })
+    table.grantReadWriteData(disconnectFunc);
 
     // access role for the socket api to access the socket lambda 
     const policy = new PolicyStatement({

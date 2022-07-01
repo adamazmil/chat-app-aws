@@ -1,0 +1,55 @@
+.ChatBox {
+  text-align: center;
+  width: 70vw;
+  overflow: hidden;
+
+
+  &-form {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 1vw;
+    font-size: calc(10px + 2vmin);
+    color: white;
+    margin-bottom: 10vh;
+
+    &-input>input {
+      padding: 12px 20px;
+      margin: 1vw 0;
+      margin-left: 5vw;
+      min-width: 40vw;
+      border-radius: 20px;
+      background-color: white;
+      border: 2px solid #d1d1cb;
+      font-size: calc(6px + 2vmin);
+
+      &:disabled {
+        background-color: grey;
+
+        &::placeholder {
+          color: white
+        }
+      }
+    }
+
+    &-button {
+      button {
+        min-width: 5vw;
+        padding: calc(1.5vmin) 16px;
+        font-size: calc(6px + 2vmin);
+        border-radius: 20px;
+        background-color: white;
+        border: 2px solid #d1d1cb;
+
+        &:disabled {
+          background-color: grey;
+          color: white;
+        }
+
+        &::hover {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}

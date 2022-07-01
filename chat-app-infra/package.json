@@ -13,7 +13,7 @@
     "prepare": "cd .. && husky install chat-app-infra/.husky"
   },
   "lint-staged":{
-    "*.ts": "npm run lint"
+    "*.{ts,js}": "npm run lint"
   },
   "devDependencies": {
     "@types/jest": "^27.5.0",

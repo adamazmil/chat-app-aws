@@ -134,7 +134,7 @@ function ChatBox () {
           </div>
           <div className='ChatBox-form-button'>
             <button type='button' onClick={() => setRenderEmoji((prev) => !prev)}>Emoji</button>
-            {renderEmoji ? <Picker onEmojiClick={onEmojiClick} native='true' pickerStyle={{ zIndex: 3, position: 'absolute', bottom: '30%', right: '30%' }} /> : null}
+            <Picker onEmojiClick={onEmojiClick} native='true' pickerStyle={{ zIndex: 3, position: 'absolute', bottom: '30%', right: '30%', display: renderEmoji?'flex':'none' }} />
             <button disabled={disable} type='submit'>Send</button>
           </div>
 

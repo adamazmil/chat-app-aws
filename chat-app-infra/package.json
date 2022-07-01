@@ -12,9 +12,6 @@
     "lint": "ts-standard | snazzy",
     "prepare": "cd .. && husky install chat-app-infra/.husky"
   },
-  "lint-staged": {
-    "*.{ts,js}": "npm run lint"
-  },
   "devDependencies": {
     "@types/jest": "^27.5.0",
     "@types/node": "10.17.27",

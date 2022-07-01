@@ -35,9 +35,6 @@
       "jest"
     ]
   },
-  "lint-staged": {
-    "*.js": "npm run lint"
-  },
   "browserslist": {
     "production": [
       ">0.2%",

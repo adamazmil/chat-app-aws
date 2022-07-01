@@ -1,4 +1,4 @@
-import './App.css'
+import './App.scss'
 import ChatBox from './chatbox/ChatBox'
 
 function App () {

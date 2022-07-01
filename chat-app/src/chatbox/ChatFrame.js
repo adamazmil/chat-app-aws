@@ -1,4 +1,4 @@
-import './ChatFrame.css'
+import './ChatFrame.scss'
 import ChatMessage from './chat-message/ChatMessage'
 import Typer from './Typer'
 function ChatFrame (props) {

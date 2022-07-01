@@ -1,4 +1,4 @@
-import './ChatMessage.css'
+import './ChatMessage.scss'
 import Message from './Message'
 import Sender from './Sender'
 import Timestamp from './Timestamp'

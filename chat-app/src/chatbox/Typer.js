@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import './Typer.css'
+import './Typer.scss'
 
 function Typer (props) {
   const [str, setStr] = useState(null)

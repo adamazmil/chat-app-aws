@@ -1,4 +1,4 @@
-import './Sender.css'
+import './Sender.scss'
 
 function Sender (props) {
   return (

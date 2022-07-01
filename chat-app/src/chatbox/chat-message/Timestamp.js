@@ -1,4 +1,4 @@
-import './Timestamp.css'
+import './Timestamp.scss'
 
 function Timestamp (props) {
   const t = new Date()

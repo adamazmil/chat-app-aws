@@ -33,7 +33,7 @@
     }
 
     &-button {
-      button {
+      > button {
         min-width: 5vw;
         padding: calc(1.5vmin) 16px;
         font-size: calc(6px + 2vmin);

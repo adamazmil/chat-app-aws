@@ -15,3 +15,11 @@ npm install
 npm run deploy:api --profile=<aws-profile>
 npm run deploy --profile=<aws-profile>
 ```
+## Development
+```
+npm install
+  cd chat-app 
+    npm install
+  cd chat-app-infra
+    npm install
+```

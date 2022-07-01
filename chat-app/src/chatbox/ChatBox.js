@@ -5,7 +5,7 @@ import Picker from 'emoji-picker-react'
 
 const webSocket = new WebSocket(process.env.REACT_APP_API_KEY) // eslint-disable-line
 
-function ChatBox() {
+function ChatBox () {
   const [currentMsg, setCurrentMsg] = useState('')
   const [messages, setMessages] = useState([])
   const [user, setUser] = useState(null)
@@ -94,11 +94,11 @@ function ChatBox() {
     }
   }, [isTyping, user])
 
-  function onEmojiClick(event, emojiObject) {
+  function onEmojiClick (event, emojiObject) {
     setChosenEmoji(emojiObject)
   }
 
-  function handleSubmit(event) {
+  function handleSubmit (event) {
     setIsTyping(false)
     event.preventDefault()
     if (currentMsg.length >= 0 && currentMsg.replace(/\s/g, '').length === 0) {
@@ -114,7 +114,7 @@ function ChatBox() {
       }
     }
   }
-  function handleChange(event) {
+  function handleChange (event) {
     setCurrentMsg(event.target.value)
     setLen(event.target.value.length)
   }
@@ -132,7 +132,7 @@ function ChatBox() {
           onChange={handleChange}
           placeholder='Type something...'
         />
-        <button className='ChatBox-form-button' type='button' onClick={() => setRenderEmoji((prev) => !prev)} >Emoji</button>
+        <button className='ChatBox-form-button' type='button' onClick={() => setRenderEmoji((prev) => !prev)}>Emoji</button>
         <Picker onEmojiClick={onEmojiClick} native='true' pickerStyle={{ zIndex: 3, position: 'absolute', bottom: '32%', right: '28%', display: renderEmoji ? 'flex' : 'none' }} />
         <button className='ChatBox-form-button' disabled={disable} type='submit'>Send</button>
       </form>

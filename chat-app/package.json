@@ -11,8 +11,6 @@
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
     "sass": "^1.53.0",
-    "snazzy": "^9.0.0",
-    "standard": "^17.0.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -23,13 +21,22 @@
     "deploy": "npm run build && cd ../chat-app-infra/ && cdk deploy ChatAppInfraStack --profile $npm_config_profile",
     "deploy:api": "cd ../chat-app-infra/ && cdk deploy ChatAppBackendInfraStack --profile $npm_config_profile",
     "lint": "standard | snazzy",
-    "lint:fix": "standard --fix | snazzy"
+    "lint:fix": "standard --fix | snazzy",
+    "prepare": "cd .. && husky install chat-app/.husky"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
     ]
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
+  "lint-staged": {
+    "*.js": "npm run lint"
   },
   "browserslist": {
     "production": [
@@ -42,5 +49,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "snazzy": "^9.0.0",
+    "standard": "^17.0.0"
   }
 }

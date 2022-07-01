@@ -1,23 +1,23 @@
-import { useEffect, useState } from 'react';
-import './Typer.css';
+import { useEffect, useState } from 'react'
+import './Typer.css'
 
-function Typer(props) {
-  const [str, setStr] = useState(null);
+function Typer (props) {
+  const [str, setStr] = useState(null)
 
   useEffect(() => {
     if (props.typers.length === 1) {
-      setStr(props.typers[0].typer +' is');
+      setStr(props.typers[0].typer + ' is')
     } else if (props.typers.length > 1) {
-      setStr('Multiple people are');
+      setStr('Multiple people are')
     } else if (props.typers.length === 0) {
-      setStr(null);
+      setStr(null)
     }
-  }, [props.typers]);
+  }, [props.typers])
   return (
-    <div className="Typer">
-      {(str !== null) ? <p>{str} typing...</p>:null}
+    <div className='Typer'>
+      {(str !== null) ? <p>{str} typing...</p> : null}
     </div>
-  );
+  )
 }
 
-export default Typer;
+export default Typer

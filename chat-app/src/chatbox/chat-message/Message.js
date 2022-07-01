@@ -1,6 +1,6 @@
-import './Message.css';
+import './Message.css'
 
-function Message(props) {
+function Message (props) {
   return (
     <div className='Message'>
       <p>{props.message}</p>
@@ -8,4 +8,4 @@ function Message(props) {
   )
 }
 
-export default Message;
+export default Message

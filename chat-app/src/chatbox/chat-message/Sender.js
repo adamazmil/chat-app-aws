@@ -1,10 +1,10 @@
-import './Sender.css';
+import './Sender.css'
 
-function Sender(props) {
+function Sender (props) {
   return (
-    <div className="Sender">
+    <div className='Sender'>
       <p>{props.sender}</p>
     </div>
   )
 }
-export default Sender;
+export default Sender

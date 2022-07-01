@@ -1,12 +1,12 @@
-import "./App.css";
-import ChatBox from "./chatbox/ChatBox";
+import './App.css'
+import ChatBox from './chatbox/ChatBox'
 
-function App() {
+function App () {
   return (
-    <div className="App">
+    <div className='App'>
       <ChatBox />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

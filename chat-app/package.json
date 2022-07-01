@@ -11,6 +11,8 @@
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
     "sass": "^1.53.0",
+    "snazzy": "^9.0.0",
+    "standard": "^17.0.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -19,7 +21,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "deploy": "npm run build && cd ../chat-app-infra/ && cdk deploy ChatAppInfraStack --profile $npm_config_profile",
-    "deploy:api": "cd ../chat-app-infra/ && cdk deploy ChatAppBackendInfraStack --profile $npm_config_profile"
+    "deploy:api": "cd ../chat-app-infra/ && cdk deploy ChatAppBackendInfraStack --profile $npm_config_profile",
+    "lint": "standard | snazzy",
+    "lint:fix": "standard --fix | snazzy"
   },
   "eslintConfig": {
     "extends": [

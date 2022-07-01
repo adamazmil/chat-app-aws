@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import ChatFrame from './ChatFrame'
 import Picker from 'emoji-picker-react'
 
-const webSocket = new WebSocket(process.env.REACT_APP_API_KEY)
+const webSocket = new WebSocket(process.env.REACT_APP_API_KEY) // eslint-disable-line
 
 function ChatBox () {
   const [currentMsg, setCurrentMsg] = useState('')
@@ -43,6 +43,7 @@ function ChatBox () {
           break
         }
         default: {
+          break
         }
       }
     }
@@ -65,9 +66,10 @@ function ChatBox () {
   timeout if we continue typing.
   */
   useEffect(() => {
+    let timeout
     if (len >= 3) {
       setIsTyping(true)
-      var timeout = setTimeout(() => {
+      timeout = setTimeout(() => {
         setIsTyping(false)
       }, 5000)
     }
@@ -134,7 +136,7 @@ function ChatBox () {
           </div>
           <div className='ChatBox-form-button'>
             <button type='button' onClick={() => setRenderEmoji((prev) => !prev)}>Emoji</button>
-            <Picker onEmojiClick={onEmojiClick} native='true' pickerStyle={{ zIndex: 3, position: 'absolute', bottom: '30%', right: '30%', display: renderEmoji?'flex':'none' }} />
+            <Picker onEmojiClick={onEmojiClick} native='true' pickerStyle={{ zIndex: 3, position: 'absolute', bottom: '30%', right: '30%', display: renderEmoji ? 'flex' : 'none' }} />
             <button disabled={disable} type='submit'>Send</button>
           </div>
 

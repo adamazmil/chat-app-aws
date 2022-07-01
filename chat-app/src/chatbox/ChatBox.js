@@ -1,6 +1,7 @@
-import "./ChatBox.css";
+import "./ChatBox.scss";
 import { useState, useEffect } from "react";
-import ChatFrame from "./ChatFrame"
+import ChatFrame from "./ChatFrame";
+import Picker from "emoji-picker-react";
 
 const webSocket = new WebSocket(process.env.REACT_APP_API_KEY);
 
@@ -11,7 +12,9 @@ function ChatBox() {
   const [disable, setDisable] = useState(true);
   const [isTyping, setIsTyping] = useState(null);
   const [len, setLen] = useState(0);
-  const [typingUser,setTypingUsers] = useState([])
+  const [typingUser, setTypingUsers] = useState([]);
+  const [chosenEmoji, setChosenEmoji] = useState(null);
+  const [renderEmoji, setRenderEmoji] = useState(false);
   const time = new Date()
 
   /* 
@@ -20,8 +23,8 @@ function ChatBox() {
     json.message = {msg:String ,sender: String,timestamp: String}: Object
   */
   useEffect(() => {
-     webSocket.onmessage = (message) => {
-       const json = JSON.parse(message.data)
+    webSocket.onmessage = (message) => {
+      const json = JSON.parse(message.data)
       switch (json.type) {
         case 'message': {
           setMessages((prev) => [...prev, json.message]);
@@ -36,7 +39,7 @@ function ChatBox() {
           break;
         }
         case 'notTyping': {
-          setTypingUsers((prev) => prev.filter((x)=>x.typer!==json.message.typer))
+          setTypingUsers((prev) => prev.filter((x) => x.typer !== json.message.typer))
           break;
         }
         default: {
@@ -44,18 +47,17 @@ function ChatBox() {
       }
     };
     webSocket.onopen = () => {
-      let payload = { action: "getguest" }
+      let payload = { action: 'getguest' };
       webSocket.send(JSON.stringify(payload));
-    }
+    };
     webSocket.onclose = () => {
       setDisable(true);
-    }
+    };
   }, []);
 
-  // checks whether user is not null to allow typing in form. 
+  // checks whether user is not null to allow typing in form.
   useEffect(() => {
-    if (user !== null)
-      setDisable(false)
+    if (user !== null) setDisable(false);
   }, [user]);
 
   /* sets up a timeout for isTyping that is allowed to 
@@ -71,21 +73,30 @@ function ChatBox() {
     }
     return () => {
       clearTimeout(timeout);
-    }
+    };
   }, [len]);
-  
+
+  useEffect(() => {
+    if(chosenEmoji!==null)
+    setCurrentMsg((prev)=>prev+chosenEmoji.emoji)
+  },[chosenEmoji])
+
   // sends a message to the websocket when user is typing
   useEffect(() => {
     let json;
     if (isTyping === true) {
-      json = { action: 'istyping', message: user }
-      webSocket.send(JSON.stringify(json))
-    } else if(isTyping===false){
-      json = { action: 'nottyping', message: user }
-      webSocket.send(JSON.stringify(json))
+      json = { action: 'istyping', message: user };
+      webSocket.send(JSON.stringify(json));
+    } else if (isTyping === false) {
+      json = { action: 'nottyping', message: user };
+      webSocket.send(JSON.stringify(json));
     }
-  }, [isTyping,user]);
-  
+  }, [isTyping, user]);
+
+  function onEmojiClick(event, emojiObject) {
+    setChosenEmoji(emojiObject);
+  }
+
   function handleSubmit(event) {
     setIsTyping(false);
     event.preventDefault();
@@ -93,7 +104,7 @@ function ChatBox() {
       // user tried to send only spaces
       setCurrentMsg('');
     } else {
-      const payload = { action: "sendmessage", message: currentMsg };
+      const payload = { action: 'sendmessage', message: currentMsg };
       const msg = { msg: currentMsg, sender: user, timestamp: time.getTime() };
       setCurrentMsg('');
       if (webSocket.readyState === 1) {
@@ -108,15 +119,29 @@ function ChatBox() {
   }
 
   return (
-    <div className='ChatBox'>
+    
+    <div className="ChatBox">
       <ChatFrame messages={messages} typer={typingUser} />
       <div className="ChatBox-form">
         <form onSubmit={handleSubmit}>
-          <input disabled={disable} type="text" value={currentMsg} onChange={handleChange} placeholder='Type something...'/>
-          <button disabled={disable} type="submit">Send</button>
+          <div className="ChatBox-form-input">
+            <input
+              disabled={disable}
+              type="text"
+              value={currentMsg}
+              onChange={handleChange}
+              placeholder="Type something..."
+            />
+          </div>
+          <div className="ChatBox-form-button">
+            <button type="button" onClick={() => setRenderEmoji((prev) => !prev)}>Emoji</button>
+            {renderEmoji ? <Picker onEmojiClick={onEmojiClick} native='true' pickerStyle={{ zIndex: 3, position: 'absolute', bottom: '30%', right: '30%' }} /> : null}
+            <button disabled={disable} type="submit">Send</button>
+          </div>
+          
         </form>
       </div>
-    </div>
+      </div>
   );
 }
 

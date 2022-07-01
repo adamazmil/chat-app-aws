@@ -1,7 +1,7 @@
-const AWS = require("aws-sdk");
-var ddb = new AWS.DynamoDB.DocumentClient();
+const AWS = require('aws-sdk')
+const ddb = new AWS.DynamoDB.DocumentClient()
 
-var animals = ['Anonymous Liger','Anonymous Shark', 'Anonymous Mink', 'Anonymous Snake', 'Anonymous Aligator']
+const animals = ['Anonymous Liger', 'Anonymous Shark', 'Anonymous Mink', 'Anonymous Snake', 'Anonymous Aligator']
 
 exports.handler = async (event) => {
   try {
@@ -10,16 +10,16 @@ exports.handler = async (event) => {
         TableName: process.env.TABLE_NAME,
         Item: {
           connectionId: event.requestContext.connectionId,
-          guestName: animals[Math.floor(Math.random()*4)]
-        },
+          guestName: animals[Math.floor(Math.random() * 4)]
+        }
       })
-      .promise();
+      .promise()
   } catch (err) {
     return {
-      statusCode: 500,
-    };
+      statusCode: 500
+    }
   }
   return {
-    statusCode: 200,
-  };
-};
+    statusCode: 200
+  }
+}

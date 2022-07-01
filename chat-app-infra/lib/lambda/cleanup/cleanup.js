@@ -1,15 +1,15 @@
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb')
-const { DynamoDBDocumentClient, ScanCommand,GetCommand } = require('@aws-sdk/lib-dynamodb')
-const {ApiGatewayManagementApiClient, PostToConnectionCommand} = require('@aws-sdk/client-apigatewaymanagementapi')
+const { DynamoDBDocumentClient, ScanCommand, GetCommand } = require('@aws-sdk/lib-dynamodb')
+const { ApiGatewayManagementApiClient, PostToConnectionCommand } = require('@aws-sdk/client-apigatewaymanagementapi')
 
 const dbClient = new DynamoDBClient({})
 const ddbDocClient = DynamoDBDocumentClient.from(dbClient)
 
 exports.handler = async (event) => {
   const apiManagementClient = new ApiGatewayManagementApiClient({
-    endpoint: 'https://' + event.requestContext.domainName + '/' + event.requestContext.stage,
+    endpoint: 'https://' + event.requestContext.domainName + '/' + event.requestContext.stage
   })
-  let connections;
+  let connections
   try {
     connections = await ddbDocClient.send(new ScanCommand(
       {
@@ -21,8 +21,9 @@ exports.handler = async (event) => {
       statusCode: 500
     }
   }
+  let item
   try {
-    var item = await ddbDocClient.send(new GetCommand({
+    item = await ddbDocClient.send(new GetCommand({
       TableName: process.env.TABLE_NAME,
       Key: {
         connectionId: event.requestContext.connectionId
@@ -30,20 +31,20 @@ exports.handler = async (event) => {
     }))
   } catch (err) {
     return {
-      statusCode:500,
+      statusCode: 500
     }
   }
-  const message = { typer:  item.Item.guestName}
+  const message = { typer: item.Item.guestName }
   const payload = { type: 'notTyping', message: message }
-  for(const {connectionId} of connections.Items){
-    if(connectionId !== event.requestContext.connectionId){
-      try{
+  for (const { connectionId } of connections.Items) {
+    if (connectionId !== event.requestContext.connectionId) {
+      try {
         await apiManagementClient.send(new PostToConnectionCommand({
-          ConnectionId: connectionId, Data:JSON.stringify(payload)
+          ConnectionId: connectionId, Data: JSON.stringify(payload)
         }))
       } catch (err) {
-        return{
-          statusCode:500
+        return {
+          statusCode: 500
         }
       }
     }
